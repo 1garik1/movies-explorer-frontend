@@ -28,7 +28,7 @@ const Navigation = () => {
                     </div>
                     <NavLink to="/profile" className="navigation__link navigation__link_type_profile">
                         <p className="navigation__p">Аккаунт</p> 
-                        <img alt='1' src={image}/>
+                        <img alt='' src={image}/>
                         </NavLink>
                 </div>
             </div>

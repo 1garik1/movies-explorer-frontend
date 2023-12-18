@@ -3,17 +3,17 @@ import Header from '../Header/Header';
 import Main from '../Main/Main';
 import Footer from '../Footer/Footer';
 import { Route, Routes } from 'react-router-dom';
-
+import NotFound from '../PageNotFound/PageNotFound';
 import Movies from '../Movies/Movies';
 import SavedMovies from '../SavedMovies/SavedMovies';
 import Register from '../Register/Register';
 import Login from '../Login/Login';
 import Profile from '../Profile/Profile';
-import PageNotFound from '../PageNotFound/PageNotFound';
+
 function App() {
 
   return (
-    <div className="App">
+    <main className="App">
       <Routes>
         <Route path="/" element={(
           <>
@@ -54,13 +54,15 @@ function App() {
             <Profile />
           </>
         )} />
-        <Route path="*" elemennt={(
+   <Route path="*" element={(
           <>
-            <PageNotFound />
+            
+            <NotFound />
           </>
         )} />
+   
       </Routes>
-    </div >
+    </main >
   );
 }
 

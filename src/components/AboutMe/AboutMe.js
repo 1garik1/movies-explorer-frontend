@@ -15,13 +15,13 @@ const AboutMe = () => {
           </p>
 
           <ul className="about-me__links">
-            <li><a className="about-me__link" href="#" target="_blank" rel="noreferrer">Telegram</a></li>
-            <li><a className="about-me__link" href="#" target="_blank" rel="noreferrer">Github</a></li>
+            <li><a className="about-me__link" href="https://t.me/Sprutorer" target="_blank" rel="noreferrer">Telegram</a></li>
+            <li><a className="about-me__link" href="https://github.com/1garik1" target="_blank" rel="noreferrer">Github</a></li>
 
           </ul>
         </div>
 
-        <img src={avatar} alt="about-me" className="about-me__image" />
+        <img src={avatar} alt="my-avatar-img" className="about-me__image" />
       </div>
     </section>
   );
