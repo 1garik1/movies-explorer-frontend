@@ -21,7 +21,7 @@ const AboutMe = () => {
           </ul>
         </div>
 
-        <img src={avatar} alt="my-avatar-img" className="about-me__image" />
+        <img src={avatar} alt="моя фотография" className="about-me__image" />
       </div>
     </section>
   );
