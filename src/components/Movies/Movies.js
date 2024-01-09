@@ -148,7 +148,6 @@ function Movies({ moviesList, setMoviesList }) {
       filterMovies(JSON.parse(localSearchData), JSON.parse(localFilteredMoviesList))
     }
     setVisibleCount(visibleMovieCards[screenType]?.initCount);
-    console.log(setVisibleCount(visibleMovieCards[screenType]?.initCount))
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screenType])

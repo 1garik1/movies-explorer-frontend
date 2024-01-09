@@ -39,7 +39,7 @@ function App() {
   }
 
   function handleRegister(name, email, password) {
-    return mainApi.registerUser(name, email, password)
+    return mainApi.register(name, email, password)
       .then(() => handleLogin(email, password))
   }
 
