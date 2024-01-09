@@ -1,7 +1,7 @@
 
 class MainApi {
   constructor() {
-    this._url = 'http://api.domain.diplomigor.nomoredomainsmonster.ru/';
+    this._url = 'https://api.domain.diplomigor.nomoredomainsmonster.ru/';
     this._headers = {
       'Content-Type': 'application/json'
     };
