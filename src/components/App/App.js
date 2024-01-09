@@ -1,181 +1,80 @@
 import './App.css';
-import React, { useState, useEffect } from 'react';
-import Header from '../Header/Header';
-import Main from '../Main/Main';
-import Footer from '../Footer/Footer';
-import { Route, Routes, useLocation, useNavigate, Navigate } from 'react-router-dom';
-import { } from 'react-router'
-import { CurrentUserContext } from '../../contexts/CurrentUserContext';
-import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
-import NotFound from '../PageNotFound/PageNotFound';
-import Movies from '../Movies/Movies';
-import Popup from '../Popup/Popup'
-import SavedMovies from '../SavedMovies/SavedMovies';
-import Register from '../Register/Register';
-import Login from '../Login/Login';
-import Profile from '../Profile/Profile';
-import MainApi from '../../utils/MainApi';
-import Token from '../../utils/token';
-import Preloader from '../Preloader/Preloader';
+import Main from "../Main/Main";
+import Movies from "../Movies/Movies";
+import { Route, Routes, useNavigate } from "react-router-dom";
+import SavedMovies from "../SavedMovies/SavedMovies";
+import Profile from "../Profile/Profile";
+import Login from "../Login/Login";
+import Register from "../Register/Register";
+import NotFound from "../PageNotFound/PageNotFound";
+import { useEffect, useState } from "react";
+import { CurrentUserContext } from "../../contexts/CurrentUserContext";
+import { WindowModeContext } from "../../contexts/WindowModeContext";
+import ProtectedRoute from "../ProtectedRoute/ProtectedRoute";
+import { mainApi } from "../../utils/MainApi";
+import useWindowSize from "../hooks/useWindowSize";
+
 function App() {
-  const [isOpenPopup, setIsOpenPopup] = useState(false);
-  const [popupTitle, setPopupTitle] = useState('');
-  const [currentUser, setCurrentUser] = useState({});
-  const [LoggedIn, setLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const { pathname } = useLocation();
+  const [currentUser, setCurrentUser] = useState({
+    name: "",
+    email: "",
+    isLoggedIn: !!localStorage.getItem('jwt')
+  });
+  const [moviesList, setMoviesList] = useState([])
+  const screenType = useWindowSize();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    getUserInfo();
-  }, []);
-
-  function getUserInfo() {
-    MainApi.getUserInfo()
-      .then((data) => {
-        setCurrentUser(data);
-        setLoggedIn(true);
-      })
-      .catch((err) => {
-        console.log(`Что-то пошло не так! Ошибка сервера ${err}`);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }
-
-  function onRegister(formData) {
-    MainApi.registerUser(formData)
-      .then((res) => {
-        if (res._id) {
-          setPopupTitle('Вы успешно зарегистрировались!');
-          setIsOpenPopup(true);
-          onLogin(formData);
-        }
-      })
-      .catch((err) => {
-        setPopupTitle('Что-то пошло не так! Ошибка регистрации.');
-        setIsOpenPopup(true);
-      });
-  }
-
-  function onLogin(formData) {
-    MainApi.loginUser(formData)
+  function handleLogin(email, password) {
+    return mainApi.login(email, password)
       .then(({ token }) => {
-        if (token) {
-          Token.saveToken(token);
-          MainApi.updateToken();
-          setLoggedIn(true);
-          getUserInfo();
-          navigate.push('/movies');
-        }
+        localStorage.setItem('jwt', token)
+        mainApi.updateToken(token)
+        return mainApi.getUser()
       })
-      .catch((err) => {
-        setPopupTitle('Что-то пошло не так! Ошибка авторизации.');
-        setIsOpenPopup(true);
-      });
+      .then(({ name, email }) => {
+        setCurrentUser((prev) => ({ ...prev, name: name, email: email, isLoggedIn: true }))
+        navigate('/movies', { replace: true });
+        return true
+      })
   }
 
-  function openPopup(textError) {
-    setPopupTitle(textError);
-    setIsOpenPopup(true);
+  function handleRegister(name, email, password) {
+    return mainApi.registerUser(name, email, password)
+      .then(() => handleLogin(email, password))
   }
 
-  function closePopup() {
-    setIsOpenPopup(false);
-    setPopupTitle('');
-  }
-
-  function onSignOut() {
-    Token.removeToken();
-    setLoggedIn(false);
-    localStorage.removeItem('films');
-    localStorage.removeItem('filmsTumbler');
-    localStorage.removeItem('filmsInputSearch');
-    localStorage.removeItem('savedFilms');
-    localStorage.removeItem('savedFilmsTumbler');
-    localStorage.removeItem('savedFilmsInputSearch');
-  }
-
+  useEffect(() => {
+    const jwt = localStorage.getItem('jwt');
+    if (jwt) {
+      mainApi.updateToken(jwt);
+      mainApi.getUser()
+        .then(({ name, email }) => {
+          setCurrentUser((prev) => ({ ...prev, name: name, email: email, isLoggedIn: true }))
+        })
+        .catch((e) => console.log(e))
+    }
+  }, [])
 
   return (
-    <CurrentUserContext.Provider value={currentUser}>
-
-      <main className="App">
-
-        {
-          pathname === '/' || pathname === '/movies' || pathname === '/saved-movies' || pathname === '/profile' ?
-            <Header loggedIn={LoggedIn} isLoading={isLoading} /> : ''
-        }
-        <Routes>
-          <Route path="/" element={
-            <Main />
-          } />
-          <Route path="/movies" element={
-            <ProtectedRoute
-              loggedIn={LoggedIn}
-              component={Movies}
-              isLoading={isLoading}
-              openPopup={openPopup}
-            />
-          } />
-
-          <Route path="/saved-movies" element={
-            <ProtectedRoute
-              loggedIn={LoggedIn}
-              component={SavedMovies}
-              isLoading={isLoading}
-              openPopup={openPopup}
-            />
-          } />
-
-          <Route path="/profile" element={
-            <ProtectedRoute
-              loggedIn={LoggedIn}
-              component={Profile}
-              isLoading={isLoading}
-              onSignOut={onSignOut}
-              openPopup={openPopup}
-            />
-          } />
-          <Route path='/signin' element={
-            isLoading
-              ? (<Preloader />)
-              :
-              !LoggedIn ? (<Login
-                onLogin={onLogin}
-              />)
-                : (
-                  <Navigate to='/movies' />)
-
-          } />
-          <Route path='/signup' element={
-            isLoading
-              ? (<Preloader />)
-              :
-              !LoggedIn ? (<Register
-                onRegister={onRegister}
-              />)
-                : (
-                  <Navigate to='/movies' />)
-
-          } />
-          <Route path="*" element={
-            <NotFound />
-
-          } />
-        </Routes>
-
-        <Popup text={popupTitle} isOpen={isOpenPopup} onClose={closePopup} />
-
-      </main >
-
-      {pathname === '/' || pathname === '/movies' || pathname === '/saved-movies' ? <Footer /> : ''}
-
-
-
-    </CurrentUserContext.Provider>
+    <div className="page">
+      <WindowModeContext.Provider value={screenType}>
+        <CurrentUserContext.Provider value={currentUser}>
+          <Routes>
+            <Route path="/" element={<Main />} />
+            <Route path="/signin" element={<Login onLogin={handleLogin} />} />
+            <Route path="/signup" element={<Register onRegister={handleRegister} />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/movies" element={<Movies moviesList={moviesList} setMoviesList={setMoviesList} />} />
+              <Route path="/saved-movies" element={<SavedMovies />} />
+              <Route path="/profile" element={<Profile setCurrentUser={setCurrentUser} />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </CurrentUserContext.Provider>
+      </WindowModeContext.Provider>
+    </div>
   );
 }
 
 export default App;
+

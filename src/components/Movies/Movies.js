@@ -1,192 +1,183 @@
-import './Movies.css';
-import React, { useEffect, useState } from 'react';
-import SearchForm from '../SearchForm/SearchForm';
-import MoviesCardList from '../MoviesCardList/MoviesCardList';
-import Preloader from '../Preloader/Preloader';
-import moviesApi from '../../utils/MoviesApi';
-import mainApi from '../../utils/MainApi.js';
+import SearchForm from "./SearchForm/SearchForm";
+import Header from "../Header/Header";
+import Footer from "../Footer/Footer";
+import MoviesCardList from "./MoviesCardList/MoviesCardList";
+import { useContext, useEffect, useState } from "react";
+import { visibleMovieCards } from "../../utils/config";
+import { WindowModeContext } from "../../contexts/WindowModeContext";
+import moviesApi from "../../utils/MoviesApi";
+import { mainApi } from "../../utils/MainApi";
+import { MOVIES_API_URL, SHORT_MOVIE_DURATION } from "../../utils/constants";
+import useSearchForm from "../hooks/useSearchForm";
 
-const Movies = ({ openPopup }) => {
-  const [films, setFilms] = useState(null);
-  const [filmsSaved, setFilmsSaved] = useState(null);
-  const [preloader, setPreloader] = useState(false);
-  const [errorText, setErrorText] = useState('');
-  const [filmsTumbler, setFilmsTumbler] = useState(false);
-  const [filmsInputSearch, setFilmsInputSearch] = useState('');
-  const [MoviesCount, setMoviesCount] = useState([]);
-  const [filmsShowed, setFilmsShowed] = useState(null);
-  const [filmsWithTumbler, setFilmsWithTumbler] = useState([]);
-  const [filmsShowedWithTumbler, setFilmsShowedWithTumbler] = useState([]);
 
-  useEffect(() => {
-    setMoviesCount(getMoviesCount());
-    const handlerResize = () => setMoviesCount(getMoviesCount());
-    window.addEventListener('resize', handlerResize);
 
-    return () => {
-      window.removeEventListener('resize', handlerResize);
-    };
-  }, []);
+function Movies({ moviesList, setMoviesList }) {
+  const { search, setSearch, handleChange, handleCheckboxChange } = useSearchForm();
+  const [filteredMovies, setFilteredMovies] = useState([]);
+  const [hasNetError, setHasNetError] = useState(false);
+  const [isMoreButtonPresent, setIsMoreButtonPresent] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(visibleMovieCards.desktop.initCount);
+  const [isNoData, setIsNoData] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const screenType = useContext(WindowModeContext);
 
-  function getMoviesCount() {
-    let countCards;
-    const clientWidth = document.documentElement.clientWidth;
-    const MoviesCountConfig = {
-      '1200': [12, 4],
-      '900': [9, 3],
-      '768': [8, 2],
-      '240': [5, 2],
-    };
 
-    Object.keys(MoviesCountConfig)
-      .sort((a, b) => a - b)
-      .forEach((key) => {
-        if (clientWidth > +key) {
-          countCards = MoviesCountConfig[key];
-        }
-      });
-
-    return countCards;
-  }
-
-  function handleMore() {
-    const spliceFilms = films;
-    const newFilmsShowed = filmsShowed.concat(spliceFilms.splice(0, MoviesCount[1]));
-    setFilmsShowed(newFilmsShowed);
-    setFilms(spliceFilms);
-  }
-
-  function handleGetMovies(inputSearch) {
-    setFilmsTumbler(false);
-    localStorage.setItem('filmsTumbler', false);
-
-    if (!inputSearch) {
-      setErrorText('Нужно ввести ключевое слово');
-      return false;
-    }
-
-    setErrorText('');
-    setPreloader(true);
-
-    try {
-      const data = moviesApi.getMovies();
-      let filterData = data.filter(({ nameRU }) => nameRU.toLowerCase().includes(inputSearch.toLowerCase()));
-      localStorage.setItem('films', JSON.stringify(filterData));
-      localStorage.setItem('filmsInputSearch', inputSearch);
-
-      const spliceData = filterData.splice(0, MoviesCount[0]);
-      setFilmsShowed(spliceData);
-      setFilms(filterData);
-      setFilmsShowedWithTumbler(spliceData);
-      setFilmsWithTumbler(filterData);
-    } catch (err) {
-      setErrorText(
-        'Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз'
-      );
-
-      setFilms([]);
-      localStorage.removeItem('films');
-      localStorage.removeItem('filmsTumbler');
-      localStorage.removeItem('filmsInputSearch');
-    } finally {
-      setPreloader(false);
+  function updateStorages(movie) {
+    setMoviesList(moviesList.map((obj) => (obj.id === movie.id) ? movie : obj))
+    const localFilteredMoviesList = localStorage.getItem('filteredMoviesList');
+    if (localFilteredMoviesList) {
+      const newFilteredMoviesList = JSON.parse(localFilteredMoviesList).map((obj) => (obj.id === movie.id) ? movie : obj)
+      setFilteredMovies(newFilteredMoviesList)
+      localStorage.setItem('filteredMoviesList', JSON.stringify(newFilteredMoviesList))
     }
   }
 
-  async function handleGetMoviesTumbler(tumbler) {
-    let filterDataShowed = [];
-    let filterData = [];
-
-    if (tumbler) {
-      setFilmsShowedWithTumbler(filmsShowed);
-      setFilmsWithTumbler(films);
-      filterDataShowed = filmsShowed.filter(({ duration }) => duration <= 40);
-      filterData = films.filter(({ duration }) => duration <= 40);
-    } else {
-      filterDataShowed = filmsShowedWithTumbler;
-      filterData = filmsWithTumbler;
-    }
-
-    localStorage.setItem('films', JSON.stringify(filterDataShowed.concat(filterData)));
-    localStorage.setItem('filmsTumbler', tumbler);
-    setFilmsShowed(filterDataShowed);
-    setFilms(filterData);
-  }
-
-  function savedMoviesToggle(film, favorite) {
-    if (favorite) {
-      const objFilm = {
-        image: ' https://api.nomoreparties.co' + film.image.url,
-        trailer: film.trailerLink,
-        thumbnail: 'https://api.nomoreparties.co' + film.image.url,
-        movieId: film.id,
-        country: film.country || 'Неизвестно',
-        director: film.director,
-        duration: film.duration,
-        year: film.year,
-        description: film.description,
-        nameRU: film.nameRU,
-        nameEN: film.nameEN,
-      };
-      try {
-        mainApi.addMovies(objFilm);
-        const newSaved = mainApi.getMovies();
-        setFilmsSaved(newSaved);
-      } catch (err) {
-        openPopup('Во время добавления фильма произошла ошибка.');
-      }
-    } else {
-      try {
-        mainApi.deleteMovies(film._id);
-        const newSaved = mainApi.getMovies();
-        setFilmsSaved(newSaved);
-      } catch (err) {
-        openPopup('Во время удаления фильма произошла ошибка.');
-      }
-    }
-  }
-
-  useEffect(() => {
-    mainApi
-      .getMovies()
-      .then((data) => {
-        setFilmsSaved(data);
+  function saveMovie(movie) {
+    setHasNetError(false)
+    return mainApi.createSavedMovie({
+      country: movie.country,
+      director: movie.director,
+      duration: movie.duration,
+      year: movie.year,
+      description: movie.description,
+      image: MOVIES_API_URL + movie.image.url,
+      trailerLink: movie.trailerLink,
+      thumbnail: MOVIES_API_URL + movie.image.formats.thumbnail.url,
+      movieId: movie.id,
+      nameRU: movie.nameRU,
+      nameEN: movie.nameEN,
+    })
+      .then((res) => {
+        movie.saved = true
+        movie.movieUUID = res['_id']
+        updateStorages(movie);
+        return true
       })
-      .catch((err) => {
-        openPopup(`Ошибка сервера ${err}`);
-      });
+      .catch(err => {
+        setHasNetError(true)
+        console.log(err)
+        return false
+      })
+  }
 
-    const localStorageFilms = localStorage.getItem('films');
 
-    if (localStorageFilms) {
-      const filterData = JSON.parse(localStorageFilms);
-      setFilmsShowed(filterData.splice(0, getMoviesCount()[0]));
-      setFilms(filterData);
-      setPreloader(false);
+  function deleteMovie(movie) {
+    setHasNetError(false)
+    return mainApi.deleteSavedMovie(movie.movieUUID)
+      .then(() => {
+        movie.saved = false
+        updateStorages(movie);
+        return true
+      })
+      .catch(err => {
+        setHasNetError(true)
+        console.log(err)
+        return false
+      })
+  }
+
+  async function handleSearchSubmit(searchData) {
+    setHasNetError(false)
+    if (moviesList.length === 0) {
+      setIsLoading(true);
+      try {
+        const allMovies = await moviesApi.getAllMovies();
+        const savedMovies = await mainApi.getMovies();
+        const result = enrichMoviesList(allMovies, savedMovies);
+        filterMovies(searchData, result)
+        setMoviesList(result);
+      } catch (err) {
+        setHasNetError(true)
+        console.log(err)
+      } finally {
+        setIsLoading(false)
+      }
+    } else {
+      filterMovies(searchData, moviesList);
     }
+  }
 
-    const localStorageFilmsTumbler = localStorage.getItem('filmsTumbler');
-    const localStorageFilmsInputSearch = localStorage.getItem('filmsInputSearch');
-
-    if (localStorageFilmsTumbler) {
-      setFilmsTumbler(localStorageFilmsTumbler === 'true');
+  function filterMovies(searchData, movies) {
+    setVisibleCount(visibleMovieCards[screenType].initCount);
+    setSearch(searchData);
+    localStorage.setItem('searchData', JSON.stringify(searchData))
+    const filteredMoviesList = movies.filter((movie) => {
+      const match = movie.nameRU.toLowerCase().includes(searchData.text.toLowerCase())
+      return searchData.isShort ? (movie.duration <= SHORT_MOVIE_DURATION && match) : match
+    })
+    if (filteredMoviesList.length === 0) {
+      setIsNoData(true);
+    } else {
+      setIsNoData(false);
     }
+    setFilteredMovies(filteredMoviesList)
+    localStorage.setItem('filteredMoviesList', JSON.stringify(filteredMoviesList))
+    const isMore = visibleMovieCards[screenType].initCount < filteredMoviesList.length
+    setIsMoreButtonPresent(isMore);
+  }
 
-    if (localStorageFilmsInputSearch) {
-      setFilmsInputSearch(localStorageFilmsInputSearch);
+  function enrichMoviesList(sourceMovies, savedMovies) {
+    return sourceMovies.map((movie) => {
+      const result = savedMovies.find(savedMovie => savedMovie.movieId === movie.id)
+      return (result)
+        ? { ...movie, saved: true, movieUUID: result['_id'] }
+        : { ...movie, saved: false }
+    })
+  }
+
+  const handleShowMore = () => {
+    const totalMovies = filteredMovies.length;
+    const screenSizeConfig = visibleMovieCards[screenType];
+    if (visibleCount + screenSizeConfig.moreCount < totalMovies) {
+      setVisibleCount(visibleCount + screenSizeConfig.moreCount);
+      setIsMoreButtonPresent(true);
+    } else if (visibleCount < totalMovies) {
+      setVisibleCount(visibleCount + screenSizeConfig.moreCount);
+      setIsMoreButtonPresent(false);
+    } else {
+      setVisibleCount(totalMovies);
+      setIsMoreButtonPresent(false);
     }
-  }, [openPopup]);
+  };
+
+  useEffect(() => {
+    const localSearchData = localStorage.getItem('searchData');
+    const localFilteredMoviesList = localStorage.getItem('filteredMoviesList');
+    if (localSearchData && localFilteredMoviesList) {
+      filterMovies(JSON.parse(localSearchData), JSON.parse(localFilteredMoviesList))
+    }
+    setVisibleCount(visibleMovieCards[screenType]?.initCount);
+    console.log(setVisibleCount(visibleMovieCards[screenType]?.initCount))
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [screenType])
 
   return (
-    <div className="movies">
-      <SearchForm handleGetMovies={handleGetMovies} filmsTumbler={filmsTumbler} filmsInputSearch={filmsInputSearch} handleGetMoviesTumbler={handleGetMoviesTumbler} />
-      {preloader && <Preloader />}
-      {errorText && <div className="movies__text-error">{errorText}</div>}
-      {!preloader && !errorText && films !== null && filmsSaved !== null && filmsShowed !== null && (
-        <MoviesCardList handleMore={handleMore} filmsRemains={films} films={filmsShowed} savedMoviesToggle={savedMoviesToggle()} filmsSaved={filmsSaved} />
-      )}
-    </div>
-  );
-};
+    <>
+      <Header />
+      <main className="page__main page__main_type_movies">
+        <SearchForm
+          onSearch={handleSearchSubmit}
+          search={search}
+          handleChange={handleChange}
+          handleCheckboxChange={handleCheckboxChange} />
+        {filteredMovies &&
+          <MoviesCardList
+            movieCardList={filteredMovies.slice(0, visibleCount)}
+            onMore={handleShowMore}
+            isMoreButtonPresent={isMoreButtonPresent}
+            hasNetError={hasNetError}
+            isNoData={isNoData}
+            onSave={saveMovie}
+            onDelete={deleteMovie}
+            isLoading={isLoading}
+          />}
+      </main>
+      <Footer />
+    </>
+  )
+}
 
-export default Movies;
+export default Movies
+

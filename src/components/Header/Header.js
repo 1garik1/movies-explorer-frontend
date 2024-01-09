@@ -1,19 +1,18 @@
-import './Header.css';
-import { Link, useLocation } from 'react-router-dom';
-import logo from '../../images/logo.svg';
-import NavAuth from '../NavAuth/NavAuth';
-import Navigation from '../Navigation/Navigation';
+import "./Header.css"
+import Navigation from "../Navigation/Navigation";
+import { useLocation } from "react-router-dom";
+import Logo from "../Logo/Logo";
 
-const Header = ({ loggedIn, isLoading }) => {
-  const { pathname } = useLocation();
-
+function Header() {
+  const location = useLocation();
   return (
-    <header className={`header ${pathname !== '/' ? '' : 'header_type_auth'}`}>
-      <Link to="/" className="header__link">
-        <img className="header__logo" src={logo} alt="Логотип Movies Explorer"></img>
-      </Link>
-      {isLoading ? '' : loggedIn ? <Navigation /> : <NavAuth />}
+    <header className={`header ${location.pathname === '/' ? 'header_theme_promo' : 'header_theme_main'}`}>
+      <div className="header__container">
+        <Logo />
+        <Navigation />
+      </div>
     </header>
-  );
-};
-export default Header;
+  )
+}
+
+export default Header

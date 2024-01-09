@@ -1,8 +1,10 @@
-import { Navigate } from 'react-router-dom';
-import Preloader from '../Preloader/Preloader';
+import { CurrentUserContext } from "../../contexts/CurrentUserContext";
+import { useContext } from "react";
+import { Navigate, Outlet } from "react-router-dom";
 
-const ProtectedRoute = ({ component: Component, ...props }) => {
-  return  props.isLoading ? <Preloader /> : props.loggedIn ? <Component {...props} /> : <Navigate to="/" />
+const ProtectedRoute = () => {
+  const user = useContext(CurrentUserContext);
+  return user.isLoggedIn ? <Outlet /> : <Navigate to="/" replace />;
 };
 
 export default ProtectedRoute;
