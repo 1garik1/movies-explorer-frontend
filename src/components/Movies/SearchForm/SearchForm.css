@@ -69,9 +69,16 @@
     padding-bottom: 9px;
     margin-bottom: 13px;
     width: 100%;
-    font-weight: 400;
-    font-size: 25px;
+    font-weight: 500;
+    font-size: 28px;
     line-height: 20px;
+    outline: none;
+}
+
+.search__form-input::placeholder {
+    font-weight: 500;
+    font-size: 28px;
+    color: #A0A0A0;
     outline: none;
 }
 
@@ -96,8 +103,8 @@
 .search__checkbox-span {
     position: relative;
     margin-top: 33px;
-    width: 36px;
-    min-height: 20px;
+    width: 34px;
+    min-height: 14px;
     background-color: #EBEBEB;
     border-radius: 20px;
 }
@@ -107,8 +114,8 @@
     position: absolute;
     top: 2px;
     left: 2px;
-    width: 16px;
-    height: 16px;
+    width: 10px;
+    height: 10px;
     background-color: #F5F5F5;
     border-radius: 50%;
     border: #FFFFFF solid 1px;
@@ -122,12 +129,12 @@
 }
 
 .search__checkbox:checked+.search__checkbox-span {
-    background-color: #EBEBEB;
+    background-color: #2BE080;
 }
 
 .search__checkbox:checked+.search__checkbox-span::before {
-    background-color: #2BE080;
-    left: calc(36px - 20px + 2px);
+    background-color: #EBEBEB;
+    left: calc(36px - 20px + 6px);
     transition: .3s;
 }
 
@@ -141,21 +148,22 @@
 
 @media screen and (min-width: 768px) and (max-width: 1279px) {
     .search__form {
-        padding: 80px 0 109px;
+        padding: 61px 0 109px;
     }
 
     .search__checkbox-container {
-        max-width: 207px;
+        max-width: 168px;
     }
 
     .search__checkbox-label {
-        padding: 0 20px 0 0px;
+        padding: 0px;
     }
 }
 
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 768px) {
     .search__form {
-        padding: 80px 0 44px;
+        padding: 72px 0 15px;
+        width: 92%;
     }
 
     .search__form-container {
@@ -167,7 +175,7 @@
     }
 
     .search__form-input-container {
-        padding: 19px;
+        padding-bottom: 4px;
     }
 
     .search__icon {
@@ -175,14 +183,22 @@
     }
 
     .search__form-input {
-        padding: 0;
-        font-size: 14px;
+        padding-bottom: 13px;
+        font-size: 28px;
         line-height: 20px;
+        margin-bottom: 0;
+    }
+
+    .search__form-input::placeholder {
+        font-weight: 500;
+        font-size: 28px;
+        color: #A0A0A0;
+        outline: none;
     }
 
     .search__checkbox-container {
-        padding: 45px 0 0;
-        max-width: 148px;
+        max-width: 168px;
+        align-self: flex-end;
     }
 
     .search__checkbox-label {
@@ -190,6 +206,10 @@
     }
 
     .search__checkbox-caption {
-        font-size: 11px;
+        font-size: 13px;
+    }
+
+    .search__checkbox-span {
+        order: 1;
     }
 }

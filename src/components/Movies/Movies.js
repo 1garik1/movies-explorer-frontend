@@ -97,7 +97,6 @@ function Movies({ moviesList, setMoviesList }) {
       filterMovies(searchData, moviesList);
     }
   }
-
   function filterMovies(searchData, movies) {
     setVisibleCount(visibleMovieCards[screenType].initCount);
     setSearch(searchData);

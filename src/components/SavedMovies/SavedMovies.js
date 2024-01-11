@@ -115,6 +115,7 @@ function SavedMovies() {
             onDelete={deleteMovie}
             isLoading={isLoading}
           />}
+
       </main>
       <Footer />
     </>

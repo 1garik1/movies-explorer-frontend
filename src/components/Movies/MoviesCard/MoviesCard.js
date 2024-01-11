@@ -40,11 +40,7 @@ function MoviesCard({ movieCard, onSave, onDelete }) {
         <li className="movies-card">
             <article className="movies-card__container">
                 <img src={srcImage} alt={movieCard.nameRU} className="movies-card__image" onClick={openLinkInNewTab} />
-                <div className="movies-card__title-container">
-
-
-                </div>
-
+                
                 <div className="movies-card__basement">
                     <h2 className="movies-card__title">{movieCard.nameRU}</h2>{
                         {
