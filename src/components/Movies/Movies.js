@@ -1,3 +1,4 @@
+
 import SearchForm from "./SearchForm/SearchForm";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
@@ -17,7 +18,7 @@ function Movies({ moviesList, setMoviesList }) {
   const [filteredMovies, setFilteredMovies] = useState([]);
   const [hasNetError, setHasNetError] = useState(false);
   const [isMoreButtonPresent, setIsMoreButtonPresent] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(visibleMovieCards.desktop.initCount);
+  const [visibleCount, setVisibleCount] = useState([visibleMovieCards.desktop.initCount]);
   const [isNoData, setIsNoData] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const screenType = useContext(WindowModeContext);
@@ -60,8 +61,6 @@ function Movies({ moviesList, setMoviesList }) {
         return false
       })
   }
-
-
   function deleteMovie(movie) {
     setHasNetError(false)
     return mainApi.deleteSavedMovie(movie.movieUUID)
@@ -76,14 +75,13 @@ function Movies({ moviesList, setMoviesList }) {
         return false
       })
   }
-
   async function handleSearchSubmit(searchData) {
     setHasNetError(false)
     if (moviesList.length === 0) {
       setIsLoading(true);
       try {
         const allMovies = await moviesApi.getAllMovies();
-        const savedMovies = await mainApi.getMovies();
+        const savedMovies = await mainApi.getSavedMovies();
         const result = enrichMoviesList(allMovies, savedMovies);
         filterMovies(searchData, result)
         setMoviesList(result);
@@ -140,17 +138,16 @@ function Movies({ moviesList, setMoviesList }) {
     }
   };
 
+
   useEffect(() => {
     const localSearchData = localStorage.getItem('searchData');
     const localFilteredMoviesList = localStorage.getItem('filteredMoviesList');
     if (localSearchData && localFilteredMoviesList) {
       filterMovies(JSON.parse(localSearchData), JSON.parse(localFilteredMoviesList))
     }
-    setVisibleCount(visibleMovieCards[screenType]?.initCount);
-
+    setVisibleCount(visibleMovieCards[screenType].initCount);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screenType])
-
   return (
     <>
       <Header />

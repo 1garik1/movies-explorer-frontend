@@ -147,6 +147,9 @@
 }
 
 @media screen and (min-width: 768px) and (max-width: 1279px) {
+    .page__search {
+        padding-bottom: 22px;
+    }
     .search__form {
         padding: 61px 0 109px;
     }
@@ -162,7 +165,7 @@
 
 @media screen and (max-width: 768px) {
     .search__form {
-        padding: 72px 0 15px;
+        padding: 67px 0 15px;
         width: 92%;
     }
 
@@ -197,7 +200,7 @@
     }
 
     .search__checkbox-container {
-        max-width: 168px;
+        max-width: 170px;
         align-self: flex-end;
     }
 
@@ -211,5 +214,36 @@
 
     .search__checkbox-span {
         order: 1;
+    }
+}
+
+@media screen and (max-width: 321px) {
+    .search__form {
+        padding: 85px 0 15px;
+        width: 92%;
+    }
+
+    .search__checkbox-container {
+        max-width: 146px;
+        align-self: center;
+        padding-top: 11px;
+    }
+
+    .search__checkbox-caption {
+        font-size: 11px;
+    }
+
+    .search__form-input {
+        padding-bottom: 13px;
+        font-size: 18px;
+        line-height: 20px;
+        margin-bottom: 0;
+    }
+
+    .search__form-input::placeholder {
+        font-weight: 500;
+        font-size: 18px;
+        color: #A0A0A0;
+        outline: none;
     }
 }

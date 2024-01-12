@@ -1,7 +1,7 @@
 import "./SearchForm.css"
-import { useState } from "react";
+import {useState} from "react";
 
-function SearchForm({ onSearch, search, handleChange, handleCheckboxChange }) {
+function SearchForm({onSearch, search, handleChange, handleCheckboxChange}) {
   const [isEmptyInput, setIsEmptyInput] = useState(false);
 
   async function handleCheckbox(e) {
@@ -25,7 +25,7 @@ function SearchForm({ onSearch, search, handleChange, handleCheckboxChange }) {
           <div className="search__form-input-container">
             <input
               type="text"
-              className="search__form-input input-focus"
+              className="search__form-input "
               placeholder="Фильм"
               name="searchInput"
               required
@@ -44,7 +44,7 @@ function SearchForm({ onSearch, search, handleChange, handleCheckboxChange }) {
                 onChange={handleCheckbox}
                 checked={search.isShort}
               />
-              <span className="search__checkbox-span input-focus" />
+              <span className="search__checkbox-span " />
               <span className="search__checkbox-caption">Короткометражки</span>
             </label>
           </div>

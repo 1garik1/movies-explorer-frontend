@@ -14,7 +14,7 @@ class MainApi {
     return res.json().then((data) => data.data || data)
   }
 
-  getMovies(){
+  getSavedMovies(){
     return fetch(`${this._url}movies`, {
       method: 'GET',
       headers: this._headers

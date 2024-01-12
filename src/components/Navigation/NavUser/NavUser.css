@@ -61,7 +61,7 @@
     }
 
     .header__nav-list {
-        min-height: 71vh;
+        min-height: 75vh;
         flex-direction: column;
         padding-top: 0px;
         padding-left: 0px;
@@ -121,7 +121,7 @@
         justify-content: flex-start;
         padding-top: 127px;
         gap: 24px;
-        min-height: 70vh;
+        min-height: 56vh;
         padding-left: 0px;
     }
 

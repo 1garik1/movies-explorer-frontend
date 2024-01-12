@@ -82,7 +82,7 @@ function SavedMovies() {
     setVisibleCount(visibleMovieCards[screenType]?.initCount);
     if (moviesList.length === 0) {
       setIsLoading(true);
-      mainApi.getMovies()
+      mainApi.getSavedMovies()
         .then((savedMovies) => {
           setMoviesList(savedMovies);
           setFilteredMovies(savedMovies);
