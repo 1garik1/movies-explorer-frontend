@@ -18,8 +18,10 @@ export default function useWindowSize() {
         const currenWidth = window.innerWidth
         if (currenWidth < deviceWidth.tablet) {
             setScreenType('mobile');
-        } else if (currenWidth >= deviceWidth.tablet && currenWidth < deviceWidth.desktop) {
+        } else if (currenWidth >= deviceWidth.tablet && currenWidth < deviceWidth.mididesktop) {
             setScreenType('tablet');
+        } else if (currenWidth >= deviceWidth.mididesktop && currenWidth < deviceWidth.desktop) {
+            setScreenType('mididesktop');
         } else if (currenWidth >= deviceWidth.desktop) {
             setScreenType('desktop');
         }

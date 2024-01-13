@@ -32,7 +32,7 @@ function SearchForm({onSearch, search, handleChange, handleCheckboxChange}) {
               onChange={handleChange}
               value={search.text}
             />
-            <button className="search__form-button-submit button-hover" >найти</button>
+            <button className="search__form-button-submit button-hover" >Найти</button>
           </div>
           <div className="search__checkbox-container button-hover">
             <label className="search__checkbox-label">

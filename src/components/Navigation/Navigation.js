@@ -20,7 +20,7 @@ function Navigation() {
     function getType() {
         if (location.pathname === '/' && !user.isLoggedIn) {
             return "navAnon"
-        } else if (screenType !== "desktop") {
+        } else if ((screenType !== "mididesktop") && (screenType !== "desktop")) {
             return "navUserBurger"
         } else {
             return "navUser"

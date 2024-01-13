@@ -1,6 +1,8 @@
 import {
     DESKTOP_INIT_CARDS,
     DESKTOP_MORE_CARDS,
+    DESCTOP_MIDI_INIT_CARDS,
+    DESCTOP_MIDI_MORE_CARDS,
     MOBILE_INIT_CARDS,
     MOBILE_MORE_CARDS,
     TABLET_INIT_CARDS,
@@ -11,6 +13,10 @@ export const visibleMovieCards = {
     desktop: {
         initCount: DESKTOP_INIT_CARDS,
         moreCount: DESKTOP_MORE_CARDS,
+    },
+    mididesktop: {
+        initCount: DESCTOP_MIDI_INIT_CARDS,
+        moreCount: DESCTOP_MIDI_MORE_CARDS,
     },
     tablet: {
         initCount: TABLET_INIT_CARDS,

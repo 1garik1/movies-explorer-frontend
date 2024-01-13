@@ -1,4 +1,3 @@
-
 import SearchForm from "./SearchForm/SearchForm";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
@@ -6,23 +5,26 @@ import MoviesCardList from "./MoviesCardList/MoviesCardList";
 import { useContext, useEffect, useState } from "react";
 import { visibleMovieCards } from "../../utils/config";
 import { WindowModeContext } from "../../contexts/WindowModeContext";
-import moviesApi from "../../utils/MoviesApi";
+import  moviesApi  from "../../utils/MoviesApi";
 import { mainApi } from "../../utils/MainApi";
 import { MOVIES_API_URL, SHORT_MOVIE_DURATION } from "../../utils/constants";
 import useSearchForm from "../hooks/useSearchForm";
 
-
+/*Use cases:
+1. Сохранить -> Переход между вкладками должен сохранять состояние saved
+2. Сохранить -> поиск с другими результатами -> вернуться к первому поиску saved присутствует
+3. Сохранить/Удалить должен менять состояние карточки и сохранять в фильтрах и сорсах
+*/
 
 function Movies({ moviesList, setMoviesList }) {
   const { search, setSearch, handleChange, handleCheckboxChange } = useSearchForm();
   const [filteredMovies, setFilteredMovies] = useState([]);
   const [hasNetError, setHasNetError] = useState(false);
   const [isMoreButtonPresent, setIsMoreButtonPresent] = useState(false);
-  const [visibleCount, setVisibleCount] = useState([visibleMovieCards.desktop.initCount]);
+  const [visibleCount, setVisibleCount] = useState(visibleMovieCards.desktop.initCount);
   const [isNoData, setIsNoData] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const screenType = useContext(WindowModeContext);
-
 
   function updateStorages(movie) {
     setMoviesList(moviesList.map((obj) => (obj.id === movie.id) ? movie : obj))
@@ -61,6 +63,7 @@ function Movies({ moviesList, setMoviesList }) {
         return false
       })
   }
+
   function deleteMovie(movie) {
     setHasNetError(false)
     return mainApi.deleteSavedMovie(movie.movieUUID)
@@ -75,6 +78,7 @@ function Movies({ moviesList, setMoviesList }) {
         return false
       })
   }
+
   async function handleSearchSubmit(searchData) {
     setHasNetError(false)
     if (moviesList.length === 0) {
@@ -95,6 +99,7 @@ function Movies({ moviesList, setMoviesList }) {
       filterMovies(searchData, moviesList);
     }
   }
+
   function filterMovies(searchData, movies) {
     setVisibleCount(visibleMovieCards[screenType].initCount);
     setSearch(searchData);
@@ -138,7 +143,6 @@ function Movies({ moviesList, setMoviesList }) {
     }
   };
 
-
   useEffect(() => {
     const localSearchData = localStorage.getItem('searchData');
     const localFilteredMoviesList = localStorage.getItem('filteredMoviesList');
@@ -146,8 +150,10 @@ function Movies({ moviesList, setMoviesList }) {
       filterMovies(JSON.parse(localSearchData), JSON.parse(localFilteredMoviesList))
     }
     setVisibleCount(visibleMovieCards[screenType].initCount);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screenType])
+
   return (
     <>
       <Header />

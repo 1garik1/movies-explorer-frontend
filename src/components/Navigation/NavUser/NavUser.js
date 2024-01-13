@@ -22,7 +22,7 @@ function NavUser() {
     return (
         <nav className="header__nav">
             <ul className="header__nav-list list">
-                {screenType !== "desktop" && <li className="header__nav-link-container">
+                {(screenType !== "desktop") && (screenType !== "mididesktop") && <li className="header__nav-link-container">
                     <NavLink
                         to="/"
                         className={({ isActive }) => `header__nav-link header__nav-link_theme_${theme} link-hover${isActive ? ' header__nav-link_active' : ''}`}

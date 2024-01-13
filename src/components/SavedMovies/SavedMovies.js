@@ -16,7 +16,7 @@ function SavedMovies() {
   const [filteredMovies, setFilteredMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasNetError, setHasNetError] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(visibleMovieCards.desktop.initCount);
+  const [visibleCount, setVisibleCount] = useState(visibleMovieCards.length);
   const [isNoData, setIsNoData] = useState(false);
   const screenType = useContext(WindowModeContext);
 
@@ -28,7 +28,7 @@ function SavedMovies() {
   }
 
   function handleSearchSubmit(searchData) {
-    setVisibleCount(visibleMovieCards[screenType].initCount);
+    setVisibleCount(visibleMovieCards.length);
     setSearch(searchData);
     const filteredMoviesList = filterMovies(moviesList, searchData);
     if (filteredMoviesList.length === 0) {
@@ -79,7 +79,7 @@ function SavedMovies() {
   }
 
   useEffect(() => {
-    setVisibleCount(visibleMovieCards[screenType]?.initCount);
+    setVisibleCount(visibleMovieCards.length);
     if (moviesList.length === 0) {
       setIsLoading(true);
       mainApi.getSavedMovies()
@@ -123,3 +123,4 @@ function SavedMovies() {
 }
 
 export default SavedMovies
+
