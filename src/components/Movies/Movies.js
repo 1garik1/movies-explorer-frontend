@@ -5,16 +5,11 @@ import MoviesCardList from "./MoviesCardList/MoviesCardList";
 import { useContext, useEffect, useState } from "react";
 import { visibleMovieCards } from "../../utils/config";
 import { WindowModeContext } from "../../contexts/WindowModeContext";
-import  moviesApi  from "../../utils/MoviesApi";
+import moviesApi from "../../utils/MoviesApi";
 import { mainApi } from "../../utils/MainApi";
 import { MOVIES_API_URL, SHORT_MOVIE_DURATION } from "../../utils/constants";
 import useSearchForm from "../hooks/useSearchForm";
 
-/*Use cases:
-1. Сохранить -> Переход между вкладками должен сохранять состояние saved
-2. Сохранить -> поиск с другими результатами -> вернуться к первому поиску saved присутствует
-3. Сохранить/Удалить должен менять состояние карточки и сохранять в фильтрах и сорсах
-*/
 
 function Movies({ moviesList, setMoviesList }) {
   const { search, setSearch, handleChange, handleCheckboxChange } = useSearchForm();
@@ -147,11 +142,14 @@ function Movies({ moviesList, setMoviesList }) {
     const localSearchData = localStorage.getItem('searchData');
     const localFilteredMoviesList = localStorage.getItem('filteredMoviesList');
     if (localSearchData && localFilteredMoviesList) {
+      // Очистка данных при новой сессии
+      localStorage.removeItem('searchData');
+      localStorage.removeItem('filteredMoviesList');
       filterMovies(JSON.parse(localSearchData), JSON.parse(localFilteredMoviesList))
     }
     setVisibleCount(visibleMovieCards[screenType].initCount);
-    
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    setMoviesList([]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screenType])
 
   return (

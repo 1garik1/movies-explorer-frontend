@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ButtonSubmit from "../ButtonSubmit/ButtonSubmit";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
-import {mainApi} from "../../utils/MainApi";
+import { mainApi } from "../../utils/MainApi";
 import { getErrorMessage } from "../../utils/utils";
 
 function Profile({ setCurrentUser }) {
@@ -54,9 +54,12 @@ function Profile({ setCurrentUser }) {
   }
 
   function handleLogout() {
-    localStorage.clear();
     setCurrentUser(() => ({ name: "", email: "", isLoggedIn: false }));
-    mainApi.updateToken('')
+    mainApi.updateToken(' ');
+    localStorage.removeItem('jwt');
+    localStorage.removeItem('searchData');
+    localStorage.removeItem('filteredMoviesList');
+
     navigate('/', { replace: true });
   }
 
