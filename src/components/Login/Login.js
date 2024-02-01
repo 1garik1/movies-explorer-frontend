@@ -1,23 +1,18 @@
-import Form from '../Form/Form';
 
-function Login() {
+import Authentication from "../Authentication/Authentication";
+import AuthenticationForm from "../Authentication/AuthenticationForm/AuthenticationForm";
+
+function Login({ onLogin }) {
+
   return (
-    <Form header="Рады видеть!" submit="Войти" question="Ещё не зарегистрированы?" link="Регистрация" path="/signup">
-      <label className="form__item">
-        <p className="form__item-text">E-mail</p>
-        <input type="email" className="form__field" placeholder="pochta@yandex.ru" minlength="10"
-          maxlength="30" required />
-        <p className="form__error">Что-то пошло не так...</p>
-      </label>
-
-      <label className="form__item">
-        <p className="form__item-text">Пароль</p>
-        <input type="password" className="form__field form__field_color-error" placeholder="пароль" minlength="8"
-          maxlength="20" required />
-        <p className="form__error form__error-display">Что-то пошло не так...</p>
-      </label>
-    </Form>
-  );
+    <main className="page__auth">
+      <section className="authentication authentication_size_l">
+        <Authentication>Рады видеть!</Authentication>
+        <AuthenticationForm type="login" onSubmit={onLogin} />
+      </section>
+    </main>
+  )
 }
 
-export default Login;
+export default Login
+
